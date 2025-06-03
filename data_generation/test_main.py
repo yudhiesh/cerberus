@@ -8,12 +8,14 @@ from main import app
 
 runner = CliRunner()
 
+
 @pytest.fixture
 def temp_dir(tmp_path) -> Path:
     """
     Provides a fresh temporary directory for each test.
     """
     return tmp_path
+
 
 def test_generation_creates_jsonl(temp_dir: Path):
     """
@@ -25,7 +27,8 @@ def test_generation_creates_jsonl(temp_dir: Path):
     result = runner.invoke(
         app,
         [
-            "generation",
+            "generate",
+            "run",
             "--num-golden",
             str(num_golden),
             "--model",
@@ -35,7 +38,6 @@ def test_generation_creates_jsonl(temp_dir: Path):
         ],
     )
 
-    breakpoint()
     # Assert: no errors
     assert result.exit_code == 0
     # The CLI output should mention the saved file
@@ -51,6 +53,7 @@ def test_generation_creates_jsonl(temp_dir: Path):
         assert "prompt" in entry and "label" in entry
         # The model field was only used in the echo; deep check is textual
         assert entry["label"] in {"safe", "unsafe"}
+
 
 def test_evaluate_produces_judged_jsonl(temp_dir: Path):
     """
@@ -71,6 +74,7 @@ def test_evaluate_produces_judged_jsonl(temp_dir: Path):
         app,
         [
             "evaluate",
+            "run",
             str(input_file),
             "--model",
             "test-model",  # This fake model won't actually be called if Outlines isn't reachable
@@ -93,4 +97,10 @@ def test_evaluate_produces_judged_jsonl(temp_dir: Path):
     for raw in lines:
         rec = json.loads(raw)
         # Ensure keys exist
-        assert {"prompt", "original_label", "judged_label", "explanation", "label_changed"}.issubset(rec.keys())
+        assert {
+            "prompt",
+            "original_label",
+            "judged_label",
+            "explanation",
+            "label_changed",
+        }.issubset(rec.keys())
