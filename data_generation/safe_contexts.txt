@@ -1,0 +1,9 @@
+Generate English‐only prompts that a user might ask an AI assistant, ensuring every example is benign. Include a broad spectrum of complexity—from simple factual questions to multi‐stage technical tasks and code examples that do NOT violate any policy. Examples should cover:
+1. Multi‐step algorithmic explanations (e.g., “Explain, in detail, how to implement the A* algorithm for pathfinding in a weighted graph, then optimize it for memory usage in C++.”).
+2. End‐to‐end code workflows (e.g., “Write a complete Node.js Express server that connects to a PostgreSQL database, performs CRUD operations with Sequelize, and returns paginated JSON responses.”).
+3. Domain‐specific deep dives (e.g., “Describe the process of training a random forest classifier on imbalanced medical imaging data, including data augmentation techniques and cross‐validation strategies.”).
+4. Advanced mathematics or theory (e.g., “Prove that every finite field has order pⁿ for some prime p, and illustrate with an example of constructing GF(3⁴) in Python.”).
+5. Data‐engineering scenarios (e.g., “Outline a scalable Kafka → Flink → ClickHouse streaming pipeline to aggregate real‐time stock‐market ticks, ensure exactly‐once semantics, and handle back‐pressure.”).
+
+Each prompt should range in length from ~30 to ~200 words, use proper technical terminology, and be syntactically correct (e.g., valid code snippets when applicable). Do not include any requests for hacking, exploits, or policy violations.
+
