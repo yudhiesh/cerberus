@@ -1,2 +1,5 @@
 generate *ARGS:
     uv run python main.py generate run {{ARGS}}
+
+evaluate *ARGS:
+    uv run python main.py evaluate run {{ARGS}}

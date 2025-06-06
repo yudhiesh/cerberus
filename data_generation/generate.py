@@ -7,7 +7,7 @@ from typing import List
 import typer
 from pydantic import BaseModel
 from enum import Enum
-from open_router_llm import OpenRouterLLM
+from openrouter_distilabel_llm import OpenRouterLLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromDicts
 from distilabel.steps.tasks import TextGeneration
@@ -72,11 +72,11 @@ def generate_dataset(
         help="Sampling temperature for the LLM (higher values = more diverse output, e.g., 1.0 or 1.2).",
     ),
     safe_contexts_file: Path = typer.Option(
-        Path("safe_contexts.txt"),
+        Path("v2_safe_contexts.txt"),
         help="Path to the file containing safe prompt contexts.",
     ),
     unsafe_contexts_file: Path = typer.Option(
-        Path("unsafe_contexts.txt"),
+        Path("v2_unsafe_contexts.txt"),
         help="Path to the file containing unsafe prompt contexts.",
     ),
     max_new_tokens: int = typer.Option(
