@@ -3,3 +3,6 @@ generate *ARGS:
 
 evaluate *ARGS:
     uv run python main.py evaluate run {{ARGS}}
+
+sync:
+    uv sync
