@@ -22,6 +22,7 @@ from distilabel.models.llms.openai import OpenAILLM
 
 _OPENROUTER_API_KEY_ENV_VAR_NAME = "OPENROUTER_API_KEY"
 
+
 class OpenRouterLLM(OpenAILLM):
     """OpenRouter LLM implementation running the async API client of OpenAI.
 

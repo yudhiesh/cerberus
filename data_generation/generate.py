@@ -16,18 +16,21 @@ app = typer.Typer(
     help="Generate synthetic LLM prompts labeled safe/unsafe, enforcing a configurable split using distilabel and OpenRouterLLM."
 )
 
+
 class LabelEnum(str, Enum):
     safe = "safe"
     unsafe = "unsafe"
+
 
 class OutPrompt(BaseModel):
     query: str
     label: LabelEnum
 
+
 def load_prompt_template(file_path: Path) -> str:
     """Load prompt template from a text file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
         typer.echo(f"Error: File not found: {file_path}", err=True)
@@ -36,13 +39,15 @@ def load_prompt_template(file_path: Path) -> str:
         typer.echo(f"Error reading file {file_path}: {e}", err=True)
         raise typer.Exit(code=1)
 
+
 def format_context_as_instruction(context: str, label: str) -> str:
     """Format the context from file into an instruction for the LLM."""
     return (
-        f'{context}\n\n'
-        f'Based on the above context, generate a single example prompt. '
+        f"{context}\n\n"
+        f"Based on the above context, generate a single example prompt. "
         f'Output only a JSON object with the following fields: "query" (the prompt) and "label" (always "{label}").'
     )
+
 
 @app.command("run")
 def generate_dataset(
@@ -111,13 +116,15 @@ def generate_dataset(
 
     typer.echo(f"Loading safe contexts from: {safe_contexts_file}")
     safe_context = load_prompt_template(safe_contexts_file)
-    
+
     typer.echo(f"Loading unsafe contexts from: {unsafe_contexts_file}")
     unsafe_context = load_prompt_template(unsafe_contexts_file)
 
     safe_count = int(num_golden * safe_ratio)
     unsafe_count = num_golden - safe_count
-    typer.echo(f"Desired distribution: {safe_count} safe, {unsafe_count} unsafe (total={num_golden}, safe_ratio={safe_ratio:.2f}).")
+    typer.echo(
+        f"Desired distribution: {safe_count} safe, {unsafe_count} unsafe (total={num_golden}, safe_ratio={safe_ratio:.2f})."
+    )
 
     # Format contexts into instructions
     safe_instruction = format_context_as_instruction(safe_context, "safe")
@@ -126,12 +133,17 @@ def generate_dataset(
     # Prepare instructions for each type
     safe_instructions = [safe_instruction for _ in range(safe_count)]
     unsafe_instructions = [unsafe_instruction for _ in range(unsafe_count)]
-    all_instructions = [(instr, "safe") for instr in safe_instructions] + [(instr, "unsafe") for instr in unsafe_instructions]
+    all_instructions = [(instr, "safe") for instr in safe_instructions] + [
+        (instr, "unsafe") for instr in unsafe_instructions
+    ]
     random.shuffle(all_instructions)
 
     # Prepare data for distilabel pipeline
     data = [
-        {"system_prompt": "You are a prompt generator for LLM safety datasets.", "instruction": instr}
+        {
+            "system_prompt": "You are a prompt generator for LLM safety datasets.",
+            "instruction": instr,
+        }
         for instr, _ in all_instructions
     ]
 
@@ -159,7 +171,12 @@ def generate_dataset(
     distiset = pipeline.run(
         parameters={
             text_generation.name: {
-                "llm": {"generation_kwargs": {"max_new_tokens": max_new_tokens, "temperature": temperature}}
+                "llm": {
+                    "generation_kwargs": {
+                        "max_new_tokens": max_new_tokens,
+                        "temperature": temperature,
+                    }
+                }
             }
         },
         use_cache=use_cache,
