@@ -1,126 +1,190 @@
 #!/usr/bin/env python3
 
 import json
-import uuid
-from collections import Counter
+import random
 from pathlib import Path
+from typing import List
 import typer
-
-from deepeval.synthesizer import Synthesizer
-from deepeval.synthesizer.config import StylingConfig
-from open_router_llm import OpenRouterOpenAI
-from typing_extensions import Annotated
-from deepeval.synthesizer.config import ContextConstructionConfig
+from pydantic import BaseModel
+from enum import Enum
+from open_router_llm import OpenRouterLLM
+from distilabel.pipeline import Pipeline
+from distilabel.steps import LoadDataFromDicts
+from distilabel.steps.tasks import TextGeneration
 
 app = typer.Typer(
-    help="Generate synthetic LLM prompts labeled safe/unsafe, enforcing a 90:10 split."
+    help="Generate synthetic LLM prompts labeled safe/unsafe, enforcing a configurable split using distilabel and OpenRouterLLM."
 )
 
+class LabelEnum(str, Enum):
+    safe = "safe"
+    unsafe = "unsafe"
+
+class OutPrompt(BaseModel):
+    query: str
+    label: LabelEnum
+
+def load_prompt_template(file_path: Path) -> str:
+    """Load prompt template from a text file."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        typer.echo(f"Error: File not found: {file_path}", err=True)
+        raise typer.Exit(code=1)
+    except Exception as e:
+        typer.echo(f"Error reading file {file_path}: {e}", err=True)
+        raise typer.Exit(code=1)
+
+def format_context_as_instruction(context: str, label: str) -> str:
+    """Format the context from file into an instruction for the LLM."""
+    return (
+        f'{context}\n\n'
+        f'Based on the above context, generate a single example prompt. '
+        f'Output only a JSON object with the following fields: "query" (the prompt) and "label" (always "{label}").'
+    )
 
 @app.command("run")
 def generate_dataset(
-    num_golden: Annotated[
-        int,
-        typer.Option(
-            help="Total number of goldens to generate (must be ≥ 10 for 90:10 split).",
-        ),
-    ] = 10,
-    model: Annotated[
-        str,
-        typer.Option(
-            help="The OpenRouter model to use (e.g., 'google/gemma-3-27b-it:free').",
-        ),
-    ] = "google/gemma-3-27b-it:free",
-    output_dir: Annotated[
-        Path,
-        typer.Option(
-            help="Directory where all outputs (two JSONL files + metadata) will be saved.",
-        ),
-    ] = Path("data"),
+    num_golden: int = typer.Option(
+        100,
+        help="Total number of examples to generate (must be >= 10).",
+    ),
+    model: str = typer.Option(
+        "mistralai/devstral-small:free",
+        help="The OpenRouter model to use (e.g., 'google/gemma-3-27b-it:free').",
+    ),
+    output_dir: Path = typer.Option(
+        Path("data"),
+        help="Directory where the output JSONL will be saved.",
+    ),
+    safe_ratio: float = typer.Option(
+        0.9,
+        help="Proportion of safe examples (e.g., 0.9 for 90:10 split). Must be in (0,1).",
+    ),
+    temperature: float = typer.Option(
+        1.0,
+        help="Sampling temperature for the LLM (higher values = more diverse output, e.g., 1.0 or 1.2).",
+    ),
+    safe_contexts_file: Path = typer.Option(
+        Path("safe_contexts.txt"),
+        help="Path to the file containing safe prompt contexts.",
+    ),
+    unsafe_contexts_file: Path = typer.Option(
+        Path("unsafe_contexts.txt"),
+        help="Path to the file containing unsafe prompt contexts.",
+    ),
+    max_new_tokens: int = typer.Option(
+        2048,
+        help="Maximum number of tokens to generate.",
+    ),
+    input_batch_size: int = typer.Option(
+        32,
+        help="Batch size for the LLM.",
+    ),
+    use_cache: bool = typer.Option(
+        False,
+        help="Whether to use cache.",
+    ),
 ):
     """
-    Generate a synthetic dataset of LLM prompts with a 90% safe / 10% unsafe split.
-
-    - num_golden: Total number of examples (must be ≥ 10).
-    - model: OpenRouter/OpenAI-compatible model identifier.
-    - output_dir: Directory to save `synthetic_{run_id}_safe.jsonl`, `synthetic_{run_id}_unsafe.jsonl`, and `metadata_{run_id}.json`.
+    Generate a synthetic dataset of LLM prompts with a configurable safe/unsafe split using distilabel and OpenRouterLLM.
+    - num_golden: Total number of examples (must be >= 10).
+    - model: OpenRouter model identifier.
+    - output_dir: Directory to save `synthetic_{num_golden}.jsonl`.
+    - safe_ratio: Proportion of safe examples (default: 0.9 for 90:10 split).
+    - safe_contexts_file: Path to file with safe prompt contexts.
+    - unsafe_contexts_file: Path to file with unsafe prompt contexts.
     """
     if num_golden < 10:
         typer.echo(
-            "Error: --num-golden must be at least 10 to enforce a 90:10 split.",
+            "Error: --num-golden must be at least 10.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+    if not (0 < safe_ratio < 1):
+        typer.echo(
+            "Error: --safe-ratio must be between 0 and 1 (exclusive).",
             err=True,
         )
         raise typer.Exit(code=1)
 
-    safe_count = int(num_golden * 0.9)
+    typer.echo(f"Loading safe contexts from: {safe_contexts_file}")
+    safe_context = load_prompt_template(safe_contexts_file)
+    
+    typer.echo(f"Loading unsafe contexts from: {unsafe_contexts_file}")
+    unsafe_context = load_prompt_template(unsafe_contexts_file)
+
+    safe_count = int(num_golden * safe_ratio)
     unsafe_count = num_golden - safe_count
-    typer.echo(
-        f"Desired distribution: {safe_count} safe, {unsafe_count} unsafe (total={num_golden})."
-    )
+    typer.echo(f"Desired distribution: {safe_count} safe, {unsafe_count} unsafe (total={num_golden}, safe_ratio={safe_ratio:.2f}).")
 
-    run_id = uuid.uuid4().hex
-    typer.echo(f"Assigned run_id: {run_id}")
+    # Format contexts into instructions
+    safe_instruction = format_context_as_instruction(safe_context, "safe")
+    unsafe_instruction = format_context_as_instruction(unsafe_context, "unsafe")
 
-    styling_config = StylingConfig(
-        input_format=(
-            "A single user-supplied prompt in English. "
-            "Prompts may be simple factual questions, moderately complex explanations, "
-            "or code-related tasks that could be either benign or malicious."
-        ),
-        expected_output_format="Either 'safe' or 'unsafe'.",
-        task=("Classify whether the given user prompt is 'safe' or 'unsafe'."),
-        scenario=("User prompts range from trivial factual questions to code tasks."),
-    )
-    deepeval_model = OpenRouterOpenAI(model_name=model)
-    synthesizer = Synthesizer(
-        styling_config=styling_config, async_mode=False, model=deepeval_model
-    )
-    safe_context_construction_config = ContextConstructionConfig(
-        min_contexts_per_document=safe_count, critic_model=deepeval_model
-    )
-    unsafe_context_construction_config = ContextConstructionConfig(
-        min_contexts_per_document=unsafe_count, critic_model=deepeval_model
-    )
+    # Prepare instructions for each type
+    safe_instructions = [safe_instruction for _ in range(safe_count)]
+    unsafe_instructions = [unsafe_instruction for _ in range(unsafe_count)]
+    all_instructions = [(instr, "safe") for instr in safe_instructions] + [(instr, "unsafe") for instr in unsafe_instructions]
+    random.shuffle(all_instructions)
+
+    # Prepare data for distilabel pipeline
+    data = [
+        {"system_prompt": "You are a prompt generator for LLM safety datasets.", "instruction": instr}
+        for instr, _ in all_instructions
+    ]
+
+    # Set up distilabel pipeline
+    with Pipeline("llm-guardrail-prompt-generation") as pipeline:
+        load_dataset = LoadDataFromDicts(
+            name="load_instructions",
+            data=data,
+        )
+        llm = OpenRouterLLM(
+            model=model,
+            structured_output={"format": "json", "schema": OutPrompt},
+        )
+        text_generation = TextGeneration(
+            name="text_generation_guardrail",
+            llm=llm,
+            input_batch_size=input_batch_size,
+            output_mappings={"model_name": "generation_model"},
+        )
+        load_dataset >> text_generation
+
     typer.echo(f"Using model: {model}")
+    typer.echo(f"Generating {num_golden} prompts...")
 
-    typer.echo(f"Generating up to {safe_count} safe examples...")
-    synthesizer.generate_goldens_from_docs(
-        document_paths=["safe_contexts.txt"],
-        context_construction_config=safe_context_construction_config,
+    distiset = pipeline.run(
+        parameters={
+            text_generation.name: {
+                "llm": {"generation_kwargs": {"max_new_tokens": max_new_tokens, "temperature": temperature}}
+            }
+        },
+        use_cache=use_cache,
     )
-    safe_goldens = synthesizer.synthetic_goldens
-    typer.echo(f"Obtained {len(safe_goldens)} safe examples.")
 
-    typer.echo(f"Generating up to {unsafe_count} unsafe examples...")
-    synthesizer.generate_goldens_from_docs(
-        document_paths=["unsafe_contexts.txt"],
-        context_construction_config=unsafe_context_construction_config,
-    )
-    synthetic_goldens = synthesizer.synthetic_goldens
+    generations = distiset["default"]["train"]["generation"]
+    typer.echo(f"Obtained {len(generations)} generations.")
+
+    output_records: List[OutPrompt] = []
+    for g in generations:
+        try:
+            record = OutPrompt.model_validate_json(g)
+            output_records.append(record)
+        except Exception as e:
+            typer.echo(f"Skipping malformed output: {g} (error: {e})", err=True)
+
+    typer.echo(f"Valid records: {len(output_records)}")
+
+    random.shuffle(output_records)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    output_path = output_dir / f"synthetic_{run_id}.jsonl"
+    output_path = output_dir / f"synthetic_{num_golden}.jsonl"
     typer.echo(f"Saving examples to: {output_path}")
     with open(output_path, "w", encoding="utf-8") as sf:
-        for g in synthetic_goldens:
-            record = {
-                "prompt": g.input.strip(),
-                "label": g.expected_output.strip().lower(),
-            }
-            sf.write(json.dumps(record, ensure_ascii=False) + "\n")
+        for rec in output_records:
+            sf.write(json.dumps(rec.model_dump(), ensure_ascii=False) + "\n")
 
-    metadata = {
-        "run_id": run_id,
-        "model": model,
-        "requested_num_golden": num_golden,
-    }
-    metadata_path = output_dir / f"metadata_{run_id}.json"
-    typer.echo(f"Writing metadata to: {metadata_path}")
-    with open(metadata_path, "w", encoding="utf-8") as mf:
-        json.dump(metadata, mf, indent=2)
-
-    safe_labels = Counter(g.expected_output.strip().lower() for g in synthetic_goldens)
-    typer.echo(f"Safe label distribution: {safe_labels}")
-
-    typer.echo("\nGeneration complete. All files share run_id: " + run_id)
+    typer.echo("\nGeneration complete.")

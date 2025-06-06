@@ -1,85 +1,75 @@
+# Copyright 2023-present, Argilla, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
-import logging
-from openai import OpenAI
-from deepeval.models.base_model import DeepEvalBaseLLM
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    wait_exponential_jitter,
-    RetryCallState,
-)
-import openai
+from typing import Optional
 
+from pydantic import Field, PrivateAttr, SecretStr
 
-def log_retry_error(retry_state: RetryCallState):
-    exception = retry_state.outcome.exception()
-    logging.error(
-        f"OpenAI Error: {exception}. Retrying attempt {retry_state.attempt_number}..."
+from distilabel.mixins.runtime_parameters import RuntimeParameter
+from distilabel.models.llms.openai import OpenAILLM
+
+_OPENROUTER_API_KEY_ENV_VAR_NAME = "OPENROUTER_API_KEY"
+
+class OpenRouterLLM(OpenAILLM):
+    """OpenRouter LLM implementation running the async API client of OpenAI.
+
+    Attributes:
+        model: the model name to use for the LLM, e.g., `google/gemma-7b-it`. See the
+            supported models under the "Models" section
+            [here](https://openrouter.ai/models).
+        base_url: the base URL to use for the OpenRouter API requests. Defaults to `None`, which
+            means that the value set for the environment variable `OPENROUTER_BASE_URL` will be used, or
+            "https://api.endpoints.anyscale.com/v1" if not set.
+        api_key: the API key to authenticate the requests to the OpenRouter API. Defaults to `None` which
+            means that the value set for the environment variable `OPENROUTER_API_KEY` will be used, or
+            `None` if not set.
+        _api_key_env_var: the name of the environment variable to use for the API key.
+            It is meant to be used internally.
+
+    Examples:
+        Generate text:
+
+        ```python
+        from distilabel.models.llms import OpenRouterLLM
+
+        llm = OpenRouterLLM(model="google/gemma-7b-it", api_key="api.key")
+
+        llm.load()
+
+        output = llm.generate_outputs(inputs=[[{"role": "user", "content": "Hello world!"}]])
+        ```
+    """
+
+    base_url: Optional[RuntimeParameter[str]] = Field(
+        default_factory=lambda: os.getenv(
+            "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"
+        ),
+        description="The base URL to use for the OpenRouter API requests.",
+    )
+    api_key: Optional[RuntimeParameter[SecretStr]] = Field(
+        default_factory=lambda: os.getenv(_OPENROUTER_API_KEY_ENV_VAR_NAME),
+        description="The API key to authenticate the requests to the OpenRouter API.",
     )
 
-
-retryable_exceptions = (
-    openai.RateLimitError,
-    openai.APIConnectionError,
-    openai.APITimeoutError,
-)
+    _api_key_env_var: str = PrivateAttr(_OPENROUTER_API_KEY_ENV_VAR_NAME)
 
 
-class OpenRouterOpenAI(DeepEvalBaseLLM):
-    def __init__(self, model_name: str, **kwargs):
-        """
-        Initialize by reading OPENAI_API_KEY and OPENAI_API_BASE from environment.
+if __name__ == "__main__":
+    from dotenv import load_dotenv
 
-        - model_name: e.g. "gpt-4o" or "gpt-3.5-turbo"
-        - kwargs: any additional OpenAI parameters (temperature, max_tokens, etc.)
-        """
-        api_key = os.getenv("OPENAI_API_KEY")
-        api_base = os.getenv("OPENAI_API_BASE")
-        if api_key is None or api_base is None:
-            raise ValueError(
-                "Both OPENAI_API_KEY and OPENAI_API_BASE must be set in the environment"
-            )
-
-        self.client = OpenAI(api_key=api_key, base_url=api_base.rstrip("/"))
-        self.model_name = model_name
-        self.request_kwargs = kwargs
-
-    def load_model(self):
-        """
-        Return a dict of parameters for chat completion.
-        """
-        return {"model": self.model_name, **self.request_kwargs}
-
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
-    def generate(self, prompt: str) -> str:
-        """
-        Synchronous generation with automatic retry on rate limits.
-        """
-        params = self.load_model()
-        response = self.client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}], **params
-        )
-        return response.choices[0].message.content.strip()
-
-    @retry(
-        wait=wait_exponential_jitter(initial=1, exp_base=2, jitter=2, max=10),
-        retry=retry_if_exception_type(retryable_exceptions),
-        after=log_retry_error,
-    )
-    async def a_generate(self, prompt: str) -> str:
-        """
-        Asynchronous generation with automatic retry on rate limits.
-        """
-        params = self.load_model()
-        response = await self.client.chat.completions.acreate(
-            messages=[{"role": "user", "content": prompt}], **params
-        )
-        return response.choices[0].message.content.strip()
-
-    def get_model_name(self):
-        return f"OpenRouter/OpenAI ({self.model_name})"
-
+    load_dotenv()
+    llm = OpenRouterLLM(model="mistralai/devstral-small:free")
+    llm.load()
+    print(llm.generate_outputs(inputs=[[{"role": "user", "content": "Hello world!"}]]))

@@ -1,0 +1,2 @@
+generate *ARGS:
+    uv run python main.py generate run {{ARGS}}

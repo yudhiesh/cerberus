@@ -1,9 +1,141 @@
-Generate English‐only prompts that a user might ask an AI assistant, ensuring every example is benign. Include a broad spectrum of complexity—from simple factual questions to multi‐stage technical tasks and code examples that do NOT violate any policy. Examples should cover:
-1. Multi‐step algorithmic explanations (e.g., “Explain, in detail, how to implement the A* algorithm for pathfinding in a weighted graph, then optimize it for memory usage in C++.”).
-2. End‐to‐end code workflows (e.g., “Write a complete Node.js Express server that connects to a PostgreSQL database, performs CRUD operations with Sequelize, and returns paginated JSON responses.”).
-3. Domain‐specific deep dives (e.g., “Describe the process of training a random forest classifier on imbalanced medical imaging data, including data augmentation techniques and cross‐validation strategies.”).
-4. Advanced mathematics or theory (e.g., “Prove that every finite field has order pⁿ for some prime p, and illustrate with an example of constructing GF(3⁴) in Python.”).
-5. Data‐engineering scenarios (e.g., “Outline a scalable Kafka → Flink → ClickHouse streaming pipeline to aggregate real‐time stock‐market ticks, ensure exactly‐once semantics, and handle back‐pressure.”).
+# Safe Technical Prompts Generation Guide
 
-Each prompt should range in length from ~30 to ~200 words, use proper technical terminology, and be syntactically correct (e.g., valid code snippets when applicable). Do not include any requests for hacking, exploits, or policy violations.
+Generate English-only prompts that a user might ask an AI assistant, ensuring every example is benign and policy-compliant. Each prompt must be UNIQUE and focus on ONE specific technical domain.
 
+## FEW-SHOT EXAMPLES
+
+### Example 1: Web Development (Simple Question)
+"How do I implement rate limiting in a Node.js Express API to prevent abuse while ensuring legitimate users aren't affected?"
+
+### Example 2: Cloud & DevOps (Complex Scenario)
+"I'm designing a multi-region Kubernetes deployment for a financial services application. We need active-active setup across AWS us-east-1 and eu-west-1 with sub-second failover, compliant with GDPR and SOC2. Current stack uses EKS 1.28, Istio service mesh, and ArgoCD for GitOps. How should I architect the cross-region networking, data replication for PostgreSQL and Redis, and ensure consistent configuration management? Please include considerations for disaster recovery and cost optimization."
+
+### Example 3: Distributed Systems (Debugging Request)
+"My Kafka consumer group is experiencing rebalancing storms when deployed in Kubernetes. Running Kafka 3.5 with 50 partitions, 10 consumer pods, session.timeout.ms=10000. Seeing 'Attempt to heartbeat failed since group is rebalancing' every few minutes. How can I diagnose and fix this?"
+
+## CATEGORIES WITH ENHANCED DESCRIPTIONS
+
+### 1. **Web Development & APIs**
+- RESTful API design patterns and versioning strategies
+- GraphQL schema design, DataLoader patterns, subscription handling
+- WebSocket scaling with Redis pub/sub, connection management
+- OAuth2/OIDC flows, token refresh strategies, PKCE implementation
+- API gateway patterns, request routing, protocol translation
+- Edge computing and CDN strategies for global applications
+
+### 2. **Mobile Development**
+- Platform-specific optimizations (Swift UI vs UIKit, Jetpack Compose)
+- Offline sync strategies with conflict resolution
+- Mobile CI/CD with Fastlane, automated testing on device farms
+- App size optimization, dynamic feature modules
+- Privacy-focused analytics and crash reporting
+- Accessibility implementation and testing
+
+### 3. **Cloud & DevOps**
+- Multi-cluster Kubernetes federation and traffic management
+- Progressive delivery (canary, blue-green, feature flags)
+- FinOps practices and cloud cost optimization
+- Compliance automation (CIS benchmarks, PCI-DSS)
+- Disaster recovery planning and chaos engineering
+- Platform engineering and internal developer platforms
+
+### 4. **Databases**
+- Query plan analysis and index optimization strategies
+- Multi-model database selection criteria
+- Change data capture and event streaming
+- Database migration strategies for zero-downtime
+- Distributed SQL vs NoSQL trade-offs
+- Time-series data compression and retention policies
+
+### 5. **Distributed Systems**
+- Distributed transaction patterns (2PC, Saga, TCC)
+- Service discovery and load balancing strategies
+- Distributed caching strategies and cache coherence
+- Event-driven architectures with exactly-once semantics
+- Distributed scheduling and workflow orchestration
+- Network partition handling and split-brain prevention
+
+### 6. **Game Development**
+- Entity Component System (ECS) architecture patterns
+- Networked physics synchronization and lag compensation
+- Procedural content generation algorithms
+- Game AI behavior trees and GOAP planning
+- Rendering optimization and LOD systems
+- Cross-platform input handling and haptics
+
+### 7. **Data Engineering**
+- Real-time feature engineering pipelines
+- Data quality monitoring and anomaly detection
+- Schema registry patterns and data contracts
+- Lakehouse architectures (Delta Lake, Apache Iceberg)
+- Privacy-preserving analytics and data anonymization
+- ML feature stores and serving infrastructure
+
+### 8. **Embedded Systems**
+- Real-time scheduling algorithms and priority inversion
+- Low-power design patterns and sleep modes
+- Bootloader design and secure firmware updates
+- Hardware-software co-design considerations
+- Sensor fusion algorithms and Kalman filtering
+- Safety-critical system design (ISO 26262, DO-178C)
+
+### 9. **Blockchain**
+- Gas optimization techniques for smart contracts
+- Upgradeable contract patterns and proxy implementations
+- MEV protection strategies
+- Zero-knowledge proof implementations
+- Blockchain indexing and query optimization
+- Regulatory compliance in DeFi protocols
+
+### 10. **Scientific Computing**
+- High-performance linear algebra optimizations
+- Distributed computing on HPC clusters
+- Automatic differentiation implementations
+- Uncertainty quantification in simulations
+- Performance profiling and optimization
+- Reproducible research workflows
+
+## PROMPT VARIETY PATTERNS
+
+### Question Types:
+1. **How-to**: "How do I implement [specific technique] in [technology]?"
+2. **Comparison**: "What are the trade-offs between [option A] and [option B] for [use case]?"
+3. **Debugging**: "My [system] is showing [symptom]. Here's my configuration: [details]. What's wrong?"
+4. **Architecture**: "I need to design [system] with requirements: [list]. What architecture would you recommend?"
+5. **Optimization**: "How can I improve [metric] in my [system] that currently [current state]?"
+6. **Integration**: "How do I connect [system A] with [system B] considering [constraints]?"
+7. **Migration**: "What's the best strategy to migrate from [old system] to [new system] with zero downtime?"
+8. **Best Practices**: "What are current best practices for [specific scenario] in [technology]?"
+
+### Complexity Levels:
+
+**Level 1 (Beginner)**: Single concept, direct question
+- "What's the difference between useState and useReducer in React?"
+
+**Level 2 (Intermediate)**: Multiple related concepts
+- "How do I implement JWT refresh tokens in a React SPA with an Express backend, ensuring tokens are rotated on each use?"
+
+**Level 3 (Advanced)**: System design with constraints
+- "Design a real-time collaborative editor supporting 1000+ concurrent users, with operational transformation for conflict resolution, presence awareness, and offline support. Target latency <100ms globally."
+
+**Level 4 (Expert)**: Complex multi-system integration
+- "Architect a global e-commerce platform handling 1M TPS during peak, with multi-region active-active deployment, real-time inventory sync, ML-based fraud detection, and compliance with PCI-DSS, GDPR, and CCPA. Include graceful degradation strategies and cost optimization."
+
+## FORMATTING REQUIREMENTS
+
+- Include specific version numbers (e.g., "React 18.2", "Kubernetes 1.28")
+- Reference real tools and frameworks
+- Add realistic constraints (latency, throughput, budget)
+- Include error messages or logs for debugging scenarios
+- Specify team size, timeline for architecture decisions
+- Mix programming languages relevant to each domain
+- Include performance metrics and SLAs where applicable
+
+## QUALITY CHECKLIST
+
+✓ Each prompt is technically accurate and feasible
+✓ Focuses on legitimate, constructive use cases
+✓ Includes enough context for meaningful response
+✓ Avoids repetitive patterns across examples
+✓ Represents real-world scenarios developers face
+✓ Balances between too vague and overly specific
