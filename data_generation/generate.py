@@ -3,50 +3,17 @@
 import json
 import random
 from pathlib import Path
-from typing import List
 import typer
-from pydantic import BaseModel
-from enum import Enum
 from openrouter_distilabel_llm import OpenRouterLLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromDicts
 from distilabel.steps.tasks import TextGeneration
+from utils.prompt import load_prompt_template, format_context_as_instruction
+from utils.models import OutPrompt
 
 app = typer.Typer(
     help="Generate synthetic LLM prompts labeled safe/unsafe, enforcing a configurable split using distilabel and OpenRouterLLM."
 )
-
-
-class LabelEnum(str, Enum):
-    safe = "safe"
-    unsafe = "unsafe"
-
-
-class OutPrompt(BaseModel):
-    query: str
-    label: LabelEnum
-
-
-def load_prompt_template(file_path: Path) -> str:
-    """Load prompt template from a text file."""
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        typer.echo(f"Error: File not found: {file_path}", err=True)
-        raise typer.Exit(code=1)
-    except Exception as e:
-        typer.echo(f"Error reading file {file_path}: {e}", err=True)
-        raise typer.Exit(code=1)
-
-
-def format_context_as_instruction(context: str, label: str) -> str:
-    """Format the context from file into an instruction for the LLM."""
-    return (
-        f"{context}\n\n"
-        f"Based on the above context, generate a single example prompt. "
-        f'Output only a JSON object with the following fields: "query" (the prompt) and "label" (always "{label}").'
-    )
 
 
 @app.command("run")
@@ -185,7 +152,7 @@ def generate_dataset(
     generations = distiset["default"]["train"]["generation"]
     typer.echo(f"Obtained {len(generations)} generations.")
 
-    output_records: List[OutPrompt] = []
+    output_records: list[OutPrompt] = []
     for g in generations:
         try:
             record = OutPrompt.model_validate_json(g)

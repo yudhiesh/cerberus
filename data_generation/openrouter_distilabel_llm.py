@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-from typing import Optional
 
 from pydantic import Field, PrivateAttr, SecretStr
 
@@ -53,13 +52,13 @@ class OpenRouterLLM(OpenAILLM):
         ```
     """
 
-    base_url: Optional[RuntimeParameter[str]] = Field(
+    base_url: RuntimeParameter[str] | None = Field(
         default_factory=lambda: os.getenv(
             "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"
         ),
         description="The base URL to use for the OpenRouter API requests.",
     )
-    api_key: Optional[RuntimeParameter[SecretStr]] = Field(
+    api_key: RuntimeParameter[SecretStr] | None = Field(
         default_factory=lambda: os.getenv(_OPENROUTER_API_KEY_ENV_VAR_NAME),
         description="The API key to authenticate the requests to the OpenRouter API.",
     )

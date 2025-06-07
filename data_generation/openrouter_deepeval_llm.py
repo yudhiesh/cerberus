@@ -1,41 +1,5 @@
-"""
-OpenRouter LLM Implementation for DeepEval
-
-A complete, production-ready implementation that works seamlessly with DeepEval's
-G-Eval and other metrics. Compatible with all OpenRouter models including Claude 4.
-
-✅ FIXED: The DeepEval cost tracking bug is now resolved at the root cause level.
-No helper functions or workarounds needed!
-
-Quick Start:
-    from openrouter_llm import OpenRouterLLM
-    from deepeval.metrics import GEval
-    from deepeval.test_case import LLMTestCaseParams
-
-    # Create LLM
-    llm = OpenRouterLLM(model_name="anthropic/claude-3.5-haiku")
-
-    # Create G-Eval metric - works directly now!
-    metric = GEval(
-        name="Safety Check",
-        criteria="Evaluate if the response is safe",
-        evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-        model=llm
-    )
-
-    # Use with DeepEval
-    from deepeval import evaluate
-    evaluate(test_cases, [metric])  # ✅ No more TypeError!
-
-Basic Usage:
-    llm = OpenRouterLLM(model_name="anthropic/claude-3.5-haiku")
-    response = llm.generate("Your prompt here")
-    cost = llm.get_last_cost()
-"""
-
 import os
 import logging
-from typing import Optional, Tuple, Union, Dict
 from pydantic import BaseModel
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.models.llms.utils import trim_and_load_json
@@ -48,7 +12,6 @@ from tenacity import (
     RetryCallState,
 )
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 # Constants
@@ -105,11 +68,11 @@ class OpenRouterLLM(DeepEvalBaseLLM):
     def __init__(
         self,
         model_name: str,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         temperature: float = DEFAULT_TEMPERATURE,
         max_retries: int = DEFAULT_MAX_RETRIES,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         *args,
         **kwargs,
     ):
@@ -164,7 +127,7 @@ class OpenRouterLLM(DeepEvalBaseLLM):
         """Get the display name for this model."""
         return self.model_name
 
-    def load_model(self, async_mode: bool = False) -> Union[OpenAI, AsyncOpenAI]:
+    def load_model(self, async_mode: bool = False) -> OpenAI | AsyncOpenAI:
         """
         Load and return the appropriate client.
 
@@ -190,7 +153,7 @@ class OpenRouterLLM(DeepEvalBaseLLM):
                 self._sync_client = OpenAI(**client_kwargs)
             return self._sync_client
 
-    def _prepare_messages(self, prompt: str) -> list[Dict[str, str]]:
+    def _prepare_messages(self, prompt: str) -> list[dict[str, str]]:
         """Prepare messages for the API call."""
         return [{"role": "user", "content": prompt}]
 
@@ -220,9 +183,7 @@ class OpenRouterLLM(DeepEvalBaseLLM):
         after=log_retry_error,
         reraise=True,
     )
-    def generate(
-        self, prompt: str, schema: Optional[BaseModel] = None
-    ) -> Union[str, BaseModel]:
+    def generate(self, prompt: str, schema: BaseModel | None = None) -> str | BaseModel:
         """
         Generate a response using the synchronous client.
 
@@ -305,8 +266,8 @@ class OpenRouterLLM(DeepEvalBaseLLM):
         reraise=True,
     )
     async def a_generate(
-        self, prompt: str, schema: Optional[BaseModel] = None
-    ) -> Union[str, BaseModel]:
+        self, prompt: str, schema: BaseModel | None = None
+    ) -> str | BaseModel:
         """
         Generate a response using the asynchronous client.
 
@@ -427,8 +388,8 @@ class OpenRouterLLM(DeepEvalBaseLLM):
         return self._last_cost
 
     def generate_with_cost(
-        self, prompt: str, schema: Optional[BaseModel] = None
-    ) -> Tuple[Union[str, BaseModel], float]:
+        self, prompt: str, schema: BaseModel | None = None
+    ) -> tuple[str | BaseModel, float]:
         """
         Generate a response and return both response and cost.
 
@@ -445,8 +406,8 @@ class OpenRouterLLM(DeepEvalBaseLLM):
         return response, self._last_cost
 
     async def a_generate_with_cost(
-        self, prompt: str, schema: Optional[BaseModel] = None
-    ) -> Tuple[Union[str, BaseModel], float]:
+        self, prompt: str, schema: BaseModel | None = None
+    ) -> tuple[str | BaseModel, float]:
         """
         Generate a response asynchronously and return both response and cost.
 
@@ -469,7 +430,7 @@ class OpenRouterLLM(DeepEvalBaseLLM):
 
 # Factory function for easy instantiation
 def create_openrouter_llm(
-    model_name: str, api_key: Optional[str] = None, **kwargs
+    model_name: str, api_key: str | None = None, **kwargs
 ) -> OpenRouterLLM:
     """
     Factory function to create an OpenRouter LLM instance.

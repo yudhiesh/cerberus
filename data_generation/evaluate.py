@@ -10,23 +10,11 @@ from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from deepeval.dataset import EvaluationDataset
 from openrouter_deepeval_llm import OpenRouterLLM
 from utils.evaluate import create_confusion_matrix_analysis, plot_confusion_matrix
+from utils.prompt import load_prompt_template
 
 app = typer.Typer(
     help="Evaluate synthetic prompts using DeepEval G-Eval (LLM-as-a-judge, OpenRouter only)."
 )
-
-
-def load_prompt_template(file_path: Path) -> str:
-    """Load prompt template from a text file."""
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        typer.echo(f"Error: File not found: {file_path}", err=True)
-        raise typer.Exit(code=1)
-    except Exception as e:
-        typer.echo(f"Error reading file {file_path}: {e}", err=True)
-        raise typer.Exit(code=1)
 
 
 @app.command("run")
@@ -52,7 +40,7 @@ def evaluate_dataset(
         dir_okay=True,
         help="Directory to save judged JSONL (default: './data').",
     ),
-    output_file: Optional[Path] = typer.Option(
+    output_file: Path | None = typer.Option(
         None,
         "--output-file",
         "-f",
@@ -70,12 +58,12 @@ def evaluate_dataset(
         "-T",
         help="Sampling temperature for the judge LLM (default: 0.7).",
     ),
-    judge_prompt_template: Optional[str] = typer.Option(
+    judge_prompt_template: str | None = typer.Option(
         None,
         "--judge-prompt-template",
         help="Custom prompt template for the judge LLM. Use '{prompt}' for the prompt placeholder.",
     ),
-    judge_prompt_template_file: Optional[Path] = typer.Option(
+    judge_prompt_template_file: Path | None = typer.Option(
         None,
         "--judge-prompt-template-file",
         help="Path to a file containing the judge prompt template. Overrides --judge-prompt-template if both are set.",
@@ -132,7 +120,7 @@ def evaluate_dataset(
         prompt_template = judge_prompt_template or default_template
 
     test_results = []
-    with open(input_file, "r", encoding="utf-8") as infile:
+    with open(input_file, encoding="utf-8") as infile:
         for line in infile:
             line = line.strip()
             if not line:
@@ -166,7 +154,11 @@ def evaluate_dataset(
         for result in test_results:
             prompt_text = result.input
             original_label = result.actual_output
-            input_prompt = prompt_text.split('Prompt: "')[1].rstrip('"') if 'Prompt: "' in prompt_text else prompt_text
+            input_prompt = (
+                prompt_text.split('Prompt: "')[1].rstrip('"')
+                if 'Prompt: "' in prompt_text
+                else prompt_text
+            )
             metrics_data = result.metrics_data[0]
             metrics_data_dict = vars(metrics_data).copy()
             output_record = {
@@ -182,7 +174,9 @@ def evaluate_dataset(
     results = create_confusion_matrix_analysis(evaluation_df)
     typer.echo("Creating confusion matrix visualization...")
 
-    evaluation_save_path = output_dir / f"{input_file.stem}_evaluation_confusion_matrix.png"
+    evaluation_save_path = (
+        output_dir / f"{input_file.stem}_evaluation_confusion_matrix.png"
+    )
     plot_confusion_matrix(evaluation_df, save_path=evaluation_save_path)
     typer.echo("\nKey Metrics:")
     typer.echo(f"Accuracy: {results['accuracy']:.2%}")

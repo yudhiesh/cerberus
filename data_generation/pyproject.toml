@@ -27,4 +27,5 @@ dependencies = [
     "ipython>=9.3.0",
     "scikit-learn>=1.7.0",
     "matplotlib>=3.10.3",
+    "pyupgrade>=3.20.0",
 ]
