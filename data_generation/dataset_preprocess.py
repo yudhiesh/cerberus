@@ -1,5 +1,4 @@
 import typer
-import json
 from pathlib import Path
 import pandas as pd
 import argilla as rg
@@ -55,18 +54,17 @@ def generate_dataset(
 
 @app.command()
 def upload_to_huggingface(
-    processed_jsonl: Path = typer.Option(..., help="Path to the processed JSONL file (output of generate-dataset)."),
-    repo_id: str = typer.Option(..., help="HuggingFace repo name, e.g. 'yudhiesh/cerberus-guardrails'."),
-    split: str = typer.Option("train", help="Dataset split name (default: 'train')."),
+    input_file: Path = typer.Option(..., help="Path to the processed JSONL file (output of generate-dataset)."),
+    repo_id: str = typer.Option("yudhiesh/cerberus-guardrails-small", help="HuggingFace repo name, e.g. 'yudhiesh/cerberus-guardrails-small'."),
     api_url: str = typer.Option("http://localhost:6900", help="Argilla API URL."),
     api_key: str = typer.Option("argilla.apikey", help="Argilla API key."),
 ):
     """Upload the processed dataset to HuggingFace Datasets Hub."""
     rg.Argilla(api_url=api_url, api_key=api_key) 
-    typer.echo(f"Loading dataset from {processed_jsonl}")
-    dataset = Dataset.from_json(str(processed_jsonl))
-    typer.echo(f"Uploading to HuggingFace Hub repo: {repo_id} (split: {split})")
-    dataset.push_to_hub(repo_id, split=split)
+    typer.echo(f"Loading dataset from {input_file}")
+    dataset = Dataset.from_json(str(input_file))
+    typer.echo(f"Uploading to HuggingFace Hub repo: {repo_id}")
+    dataset.push_to_hub(repo_id)
     typer.echo(f"Successfully uploaded to {repo_id}")
 
 if __name__ == "__main__":
