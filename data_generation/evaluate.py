@@ -2,12 +2,14 @@
 
 import json
 from pathlib import Path
+import pandas as pd
 from typing import Optional
 import typer
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from deepeval.dataset import EvaluationDataset
 from openrouter_deepeval_llm import OpenRouterLLM
+from utils.evaluate import create_confusion_matrix_analysis, plot_confusion_matrix
 
 app = typer.Typer(
     help="Evaluate synthetic prompts using DeepEval G-Eval (LLM-as-a-judge, OpenRouter only)."
@@ -115,6 +117,7 @@ def evaluate_dataset(
         output_path = output_dir / output_file
     else:
         output_path = output_dir / f"{input_file.stem}_judged.jsonl"
+
     typer.echo(f"Evaluating prompts and saving to: {output_path}")
 
     default_template = (
@@ -174,4 +177,15 @@ def evaluate_dataset(
             output_record.update(metrics_data_dict)
             outfile.write(json.dumps(output_record, ensure_ascii=False) + "\n")
     typer.echo(f"Saved evaluation results to : {output_path.as_posix()}")
-    # TODO: Calculate overall accuracy and save plots
+    evaluation_df = pd.read_json(output_path, lines=True)
+    typer.echo("Running evaluation on evalaution results...")
+    results = create_confusion_matrix_analysis(evaluation_df)
+    typer.echo("Creating confusion matrix visualization...")
+
+    evaluation_save_path = output_dir / f"{input_file.stem}_evaluation_confusion_matrix.png"
+    plot_confusion_matrix(evaluation_df, save_path=evaluation_save_path)
+    typer.echo("\nKey Metrics:")
+    typer.echo(f"Accuracy: {results['accuracy']:.2%}")
+    typer.echo(f"Precision: {results['precision']:.2%}")
+    typer.echo(f"Recall: {results['recall']:.2%}")
+    typer.echo(f"F1-Score: {results['f1_score']:.2%}")
