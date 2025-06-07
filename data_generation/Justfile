@@ -19,3 +19,6 @@ down:
 
 annotate *ARGS:
     uv run python main.py annotate {{ARGS}}
+
+preprocess *ARGS:
+    uv run python main.py preprocess {{ARGS}}
