@@ -6,3 +6,6 @@ evaluate *ARGS:
 
 sync:
     uv sync
+
+format:
+    uv run ruff format
