@@ -22,3 +22,6 @@ annotate *ARGS:
 
 preprocess *ARGS:
     uv run python main.py preprocess {{ARGS}}
+
+deduplicate *ARGS:
+    uv run python main.py deduplicate run {{ARGS}}
