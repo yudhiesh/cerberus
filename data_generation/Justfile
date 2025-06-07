@@ -9,3 +9,13 @@ sync:
 
 format:
     uv run ruff format
+
+
+up:
+    docker compose up -d
+
+down:
+    docker compose down --volumes --remove-orphans
+
+annotate *ARGS:
+    uv run python main.py annotate {{ARGS}}

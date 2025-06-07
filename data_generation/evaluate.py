@@ -3,7 +3,6 @@
 import json
 from pathlib import Path
 import pandas as pd
-from typing import Optional
 import typer
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
@@ -69,7 +68,7 @@ def evaluate_dataset(
         help="Path to a file containing the judge prompt template. Overrides --judge-prompt-template if both are set.",
     ),
     async_mode: bool = typer.Option(
-        False,
+        True,
         "--async-mode",
         "-a",
         help="Whether to run the evaluation in concurrently.",
