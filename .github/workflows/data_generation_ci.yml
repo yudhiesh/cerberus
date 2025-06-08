@@ -34,12 +34,15 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run formatter
         run: just format
+        working-directory: data_generation
 
   lint:
     name: Lint
@@ -57,12 +60,15 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run linter
         run: just lint
+        working-directory: data_generation
 
   test:
     name: Test
@@ -80,9 +86,12 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run tests
-        run: just test 
+        run: just test
+        working-directory: data_generation 
