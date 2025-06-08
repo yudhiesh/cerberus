@@ -57,7 +57,7 @@ tests/
 
 ### 2. deduplicate.py
 **Complexity: MEDIUM**
-**Status: 🔄 In Progress**
+**Status: ✅ Completed**
 
 #### Test Objectives
 - [ ] Test deduplication logic
@@ -92,7 +92,7 @@ tests/
 
 ### 3. annotate.py
 **Complexity: MEDIUM**
-**Status: Not Started**
+**Status: ⏭️ Skipped**
 
 #### Test Objectives
 - [ ] Test Argilla integration
@@ -127,7 +127,7 @@ tests/
 
 ### 4. dataset_preprocess.py
 **Complexity: MEDIUM**
-**Status: Not Started**
+**Status: ⏳ Not Started**
 
 #### Test Objectives
 - [ ] Test dataset merging
@@ -163,7 +163,7 @@ tests/
 
 ### 5. generate.py
 **Complexity: HIGH**
-**Status: Not Started**
+**Status: ⏳ Not Started**
 
 #### Test Objectives
 - [ ] Test prompt generation
@@ -199,7 +199,7 @@ tests/
 
 ### 6. evaluate.py
 **Complexity: HIGH**
-**Status: Not Started**
+**Status: ⏳ Not Started**
 
 #### Test Objectives
 - [ ] Test evaluation logic
@@ -235,20 +235,27 @@ tests/
 
 ## Progress Tracking
 
-### Current Status
-- [x] main.py
-- [ ] deduplicate.py
-- [ ] annotate.py
-- [ ] dataset_preprocess.py
-- [ ] generate.py
-- [ ] evaluate.py
+| Component         | Status        | Notes |
+|-------------------|--------------|-------|
+| main.py           | ✅ Completed | CLI tests, error handling, help, version |
+| deduplicate.py    | ✅ Completed | Integration-style tests using real SemHash and real file I/O with tmp_path. Tests cover: valid deduplication, invalid input, missing columns, metrics output, and output file creation. |
+| annotate.py       | ⏭️ Skipped | Thin wrapper around Argilla API with minimal custom logic. Most functionality is handled by the library itself. |
+| dataset_preprocess.py | ⏳ Not Started | Next up |
+| evaluate.py       | ⏳ Not Started |  |
+| generate.py       | ⏳ Not Started |  |
+| openrouter_deepeval_llm.py | ⏳ Not Started |  |
+| openrouter_distilabel_llm.py | ⏳ Not Started |  |
 
-### Next Steps
-1. ✅ Set up test environment
-2. 🔄 Create test data for deduplicate.py
-3. ✅ Implement main.py tests
-4. 🔄 Implement deduplicate.py tests
-5. Review and refine
+## Next Steps
+
+- Begin testing for `dataset_preprocess.py`:
+  - Review CLI structure and dependencies
+  - Identify required test data and mocks (if any)
+  - Implement tests for CLI, error handling, and output
+
+---
+
+**Note:** For CLI tools, integration-style tests using real logic and temporary files are preferable to excessive mocking, as they better reflect real-world usage and catch more issues.
 
 ## Notes
 - All external API calls must be mocked
