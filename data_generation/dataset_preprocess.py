@@ -105,7 +105,7 @@ def generate_dataset(
     # Final statistics
     argilla_used = len(merged_df[merged_df["label"].notna()])
     original_used = len(result_df) - argilla_used
-    typer.echo(f"\nFinal dataset statistics:")
+    typer.echo("\nFinal dataset statistics:")
     typer.echo(f"- Total rows: {len(result_df)}")
     typer.echo(f"- Rows using argilla labels: {argilla_used}")
     typer.echo(f"- Rows using original labels: {original_used}")

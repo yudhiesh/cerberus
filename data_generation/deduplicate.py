@@ -3,7 +3,6 @@ from pathlib import Path
 from semhash import SemHash
 import pandas as pd
 import json
-from typing import Dict, Any
 
 app = typer.Typer(help="Deduplicate the dataset.")
 
@@ -68,7 +67,7 @@ def deduplicate(
             json.dump(deduplication_metadata, f, indent=2)
 
         # Print summary
-        typer.echo(f"\nDeduplication Summary:")
+        typer.echo("\nDeduplication Summary:")
         typer.echo(f"Original size: {deduplication_metadata['original_size']}")
         typer.echo(f"Deduplicated size: {deduplication_metadata['deduplicated_size']}")
         typer.echo(f"Removed {deduplication_metadata['removed_count']} duplicates")

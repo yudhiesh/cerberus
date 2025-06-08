@@ -1,10 +1,7 @@
 import typer
-import json
 from pathlib import Path
-from typing import Optional
 import pandas as pd
 import argilla as rg
-from utils.models import LabelEnum
 
 app = typer.Typer(help="Manage data annotation workflow with Argilla.")
 
