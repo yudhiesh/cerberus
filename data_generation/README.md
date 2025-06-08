@@ -20,6 +20,23 @@ The pipeline consists of the following steps:
 - HuggingFace account and API token
 - OpenRouter API key
 
+## Environment Variables
+
+Before starting, you need to set up your environment variables. The repository includes a `.env.example` file that you can use as a template:
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+Then edit the `.env` file and set the following required variables:
+
+- `OPENROUTER_API_KEY`: Your OpenRouter API key (get it from [OpenRouter](https://openrouter.ai/))
+- `HF_TOKEN`: Your HuggingFace API token (get it from [HuggingFace Settings](https://huggingface.co/settings/tokens))
+- `ARGILLA_API_KEY`: Your Argilla API key (default is "argilla.apikey" for local development)
+
+⚠️ **Important**: Never commit your `.env` file to version control. It's already included in `.gitignore` to prevent accidental commits.
+
 ## Setup
 
 1. Clone the repository:
@@ -137,11 +154,3 @@ For issues with:
 - DeepEval: [DeepEval Documentation](https://deepeval.com/docs)
 - Argilla: [Argilla Documentation](https://docs.argilla.io/)
 - SemHash: [SemHash Documentation](https://github.com/argilla-io/semhash)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Your License Here]
