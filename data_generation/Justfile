@@ -1,8 +1,8 @@
 generate *ARGS:
-    uv run python main.py generate run {{ARGS}}
+    PYTHONPATH="$(pwd)/src" uv run python -m data_generation.main generate run {{ARGS}}
 
 evaluate *ARGS:
-    uv run python main.py evaluate run {{ARGS}}
+    PYTHONPATH="$(pwd)/src" uv run python -m data_generation.main evaluate run {{ARGS}}
 
 sync:
     uv sync
@@ -21,13 +21,13 @@ down:
     docker compose down --volumes --remove-orphans
 
 annotate *ARGS:
-    uv run python main.py annotate {{ARGS}}
+    PYTHONPATH="$(pwd)" uv run python -m data_generation.main annotate {{ARGS}}
 
 preprocess *ARGS:
-    uv run python main.py preprocess {{ARGS}}
+    PYTHONPATH="$(pwd)" uv run python -m data_generation.main preprocess {{ARGS}}
 
 deduplicate *ARGS:
-    uv run python main.py deduplicate run {{ARGS}}
+    PYTHONPATH="$(pwd)" uv run python -m data_generation.main deduplicate run {{ARGS}}
 
 test *ARGS:
     # Run tests with pytest
@@ -37,4 +37,4 @@ test *ARGS:
     #   just test -k "test_name"     # Run specific test function
     #   just test --cov              # Run with coverage
     #   just test -v                 # Run with verbosity
-    export PYTHONPATH="$(pwd)" && uv run pytest {{ARGS}}
+    PYTHONPATH="$(pwd)" uv run pytest {{ARGS}}

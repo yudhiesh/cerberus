@@ -3,7 +3,7 @@
 from typer.testing import CliRunner
 import pandas as pd
 
-from generate import app
+from src.data_generation.generate import app
 
 
 def test_generate_dataset_basic(

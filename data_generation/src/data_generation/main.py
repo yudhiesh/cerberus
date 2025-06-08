@@ -2,12 +2,12 @@
 
 import typer
 import sys
-from generate import app as generate_app
-from evaluate import app as evaluate_app
+from src.data_generation.generate import app as generate_app
+from src.data_generation.evaluate import app as evaluate_app
 from dotenv import load_dotenv
-from annotate import app as annotate_app
-from dataset_preprocess import app as preprocess_app
-from deduplicate import app as deduplicate_app
+from src.data_generation.annotate import app as annotate_app
+from src.data_generation.dataset_preprocess import app as preprocess_app
+from src.data_generation.deduplicate import app as deduplicate_app
 
 load_dotenv()
 
