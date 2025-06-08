@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'data_generation/src/data_generation/**'
       - 'data_generation/tests/**'
@@ -10,7 +10,7 @@ on:
       - 'data_generation/pyproject.toml'
       - '.github/workflows/**'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'data_generation/src/data_generation/**'
       - 'data_generation/tests/**'
