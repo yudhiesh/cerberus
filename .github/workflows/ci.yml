@@ -4,18 +4,18 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'src/data_generation/**'
-      - 'tests/**'
-      - 'Justfile'
-      - 'pyproject.toml'
+      - 'data_generation/src/data_generation/**'
+      - 'data_generation/tests/**'
+      - 'data_generation/Justfile'
+      - 'data_generation/pyproject.toml'
       - '.github/workflows/**'
   pull_request:
     branches: [ main ]
     paths:
-      - 'src/data_generation/**'
-      - 'tests/**'
-      - 'Justfile'
-      - 'pyproject.toml'
+      - 'data_generation/src/data_generation/**'
+      - 'data_generation/tests/**'
+      - 'data_generation/Justfile'
+      - 'data_generation/pyproject.toml'
       - '.github/workflows/**'
 
 jobs:
