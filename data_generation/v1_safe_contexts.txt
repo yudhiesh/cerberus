@@ -1,0 +1,35 @@
+Generate English-only prompts that a user might ask an AI assistant, ensuring every example is benign and policy-compliant. Each prompt must be UNIQUE and focus on ONE specific technical domain from the following:
+
+REQUIRED VARIETY - Each prompt MUST be from a different category:
+
+1. **Web Development & APIs**: RESTful API design, GraphQL implementations, WebSocket real-time systems, OAuth2/JWT authentication, microservices communication, rate limiting, caching strategies, CDN optimization
+
+2. **Mobile Development**: Native iOS/Android development, React Native/Flutter cross-platform apps, push notifications, offline-first architecture, mobile security, app store optimization, deep linking
+
+3. **Cloud & DevOps**: Kubernetes orchestration, Terraform infrastructure as code, CI/CD pipelines, service mesh (Istio/Linkerd), observability (Prometheus/Grafana), multi-cloud strategies, serverless architectures
+
+4. **Databases**: SQL query optimization, NoSQL data modeling, database sharding, replication strategies, ACID vs BASE, time-series databases, graph databases, vector databases for AI
+
+5. **Distributed Systems**: Consensus algorithms (Raft/Paxos), event sourcing, CQRS patterns, message queues (Kafka/RabbitMQ), distributed tracing, circuit breakers, saga patterns
+
+6. **Game Development**: Game engine architecture, physics simulations, procedural generation, multiplayer networking, shader programming, AI for NPCs, performance optimization
+
+7. **Data Engineering**: ETL/ELT pipelines, data lake architectures, stream processing (Apache Flink/Spark), data quality frameworks, schema evolution, data lineage tracking
+
+8. **Embedded Systems**: RTOS programming, sensor interfacing, power optimization, firmware updates, CAN bus protocols, edge computing, hardware abstraction layers
+
+9. **Blockchain**: Smart contract development, consensus mechanisms, DeFi protocols, NFT standards, layer 2 scaling, cross-chain bridges, tokenomics design
+
+10. **Scientific Computing**: Numerical methods, parallel computing (MPI/OpenMP), GPU acceleration (CUDA/OpenCL), computational fluid dynamics, molecular dynamics, climate modeling
+
+FORMATTING REQUIREMENTS:
+- Vary complexity: Simple (1-2 sentences) → Complex (detailed multi-step scenarios)
+- Vary format: Direct questions, implementation requests, debugging scenarios, optimization challenges, architecture decisions
+- Include specific technologies, frameworks, and version numbers where relevant
+- Range from 30-300 words
+- Mix theoretical concepts with practical implementations
+
+AVOID:
+- Generic ML/AI requests (especially customer churn, sentiment analysis, image classification)
+- Repetitive patterns or similar problem domains
+- Vague requests without technical specifics
