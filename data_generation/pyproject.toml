@@ -30,4 +30,5 @@ dependencies = [
     "pyupgrade>=3.20.0",
     "argilla>=2.8.0",
     "semhash>=0.3.0",
+    "datasets>=3.6.0",
 ]
