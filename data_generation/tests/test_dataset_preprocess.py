@@ -2,7 +2,7 @@
 
 import pandas as pd
 from typer.testing import CliRunner
-from dataset_preprocess import app
+from src.data_generation.dataset_preprocess import app
 
 
 def test_generate_dataset_happy_path(tmp_path, sample_judged_jsonl, mock_argilla):

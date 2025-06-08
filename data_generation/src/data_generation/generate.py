@@ -4,7 +4,7 @@ import json
 import random
 from pathlib import Path
 import typer
-from openrouter_distilabel_llm import OpenRouterLLM
+from src.data_generation.openrouter_distilabel_llm import OpenRouterLLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromDicts
 from distilabel.steps.tasks import TextGeneration

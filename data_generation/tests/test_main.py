@@ -2,7 +2,7 @@
 
 from typer.testing import CliRunner
 
-from main import app
+from src.data_generation.main import app
 
 
 def test_app_initialization(runner: CliRunner):

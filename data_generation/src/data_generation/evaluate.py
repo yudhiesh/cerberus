@@ -7,7 +7,7 @@ import typer
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from deepeval.dataset import EvaluationDataset
-from openrouter_deepeval_llm import OpenRouterLLM
+from src.data_generation.openrouter_deepeval_llm import OpenRouterLLM
 from utils.evaluate import create_confusion_matrix_analysis, plot_confusion_matrix
 from utils.prompt import load_prompt_template
 

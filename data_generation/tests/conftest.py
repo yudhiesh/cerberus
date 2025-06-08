@@ -67,8 +67,10 @@ def sample_judged_jsonl(tmp_path):
 @pytest.fixture
 def mock_argilla(sample_argilla_export_record):
     with (
-        patch("dataset_preprocess.rg.Argilla") as mock_client,
-        patch("dataset_preprocess.rg.Dataset") as mock_dataset_class,
+        patch("src.data_generation.dataset_preprocess.rg.Argilla") as mock_client,
+        patch(
+            "src.data_generation.dataset_preprocess.rg.Dataset"
+        ) as mock_dataset_class,
     ):
         mock_dataset = MagicMock()
         mock_dataset.records = MagicMock()
