@@ -31,4 +31,7 @@ dependencies = [
     "argilla>=2.8.0",
     "semhash>=0.3.0",
     "datasets>=3.6.0",
+    "pytest-mock>=3.14.1",
+    "pytest-cov>=6.1.1",
+    "mock>=5.2.0",
 ]

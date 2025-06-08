@@ -28,3 +28,13 @@ preprocess *ARGS:
 
 deduplicate *ARGS:
     uv run python main.py deduplicate run {{ARGS}}
+
+test *ARGS:
+    # Run tests with pytest
+    # Usage:
+    #   just test                    # Run all tests
+    #   just test test_main.py       # Run specific test file
+    #   just test -k "test_name"     # Run specific test function
+    #   just test --cov              # Run with coverage
+    #   just test -v                 # Run with verbosity
+    export PYTHONPATH="$(pwd)" && uv run pytest {{ARGS}}
