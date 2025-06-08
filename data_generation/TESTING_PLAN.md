@@ -9,6 +9,9 @@ This document outlines the testing strategy for the Cerberus data generation pip
   ```bash
   uv add pytest pytest-mock pytest-cov mock typer
   ```
+- ✅ Test environment configured
+- ✅ Dependencies installed
+- ✅ Test structure created
 
 ## Test Data Structure
 ```
@@ -28,33 +31,33 @@ tests/
 
 ### 1. main.py
 **Complexity: LOW**
-**Status: Not Started**
+**Status: ✅ Completed**
 
 #### Test Objectives
-- [ ] Test app initialization
-- [ ] Test command registration
-- [ ] Test help messages
-- [ ] Test error handling
+- [x] Test app initialization
+- [x] Test command registration
+- [x] Test help messages
+- [x] Test error handling
 
 #### Required Mocks
 - None (simple app composition)
 
 #### Test Cases
 1. App Initialization
-   - [ ] Verify all subcommands are registered
-   - [ ] Verify help messages are correct
+   - [x] Verify all subcommands are registered
+   - [x] Verify help messages are correct
 
 2. Command Registration
-   - [ ] Verify all commands are accessible
-   - [ ] Verify command help messages
+   - [x] Verify all commands are accessible
+   - [x] Verify command help messages
 
 3. Error Handling
-   - [ ] Test invalid command handling
-   - [ ] Test help message display
+   - [x] Test invalid command handling
+   - [x] Test help message display
 
 ### 2. deduplicate.py
 **Complexity: MEDIUM**
-**Status: Not Started**
+**Status: 🔄 In Progress**
 
 #### Test Objectives
 - [ ] Test deduplication logic
@@ -233,7 +236,7 @@ tests/
 ## Progress Tracking
 
 ### Current Status
-- [ ] main.py
+- [x] main.py
 - [ ] deduplicate.py
 - [ ] annotate.py
 - [ ] dataset_preprocess.py
@@ -241,10 +244,10 @@ tests/
 - [ ] evaluate.py
 
 ### Next Steps
-1. Set up test environment
-2. Create test data
-3. Implement main.py tests
-4. Progress through complexity levels
+1. ✅ Set up test environment
+2. 🔄 Create test data for deduplicate.py
+3. ✅ Implement main.py tests
+4. 🔄 Implement deduplicate.py tests
 5. Review and refine
 
 ## Notes
