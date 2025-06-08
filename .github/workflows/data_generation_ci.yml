@@ -2,20 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
-      - 'src/data_generation/**'
-      - 'tests/**'
-      - 'Justfile'
-      - 'pyproject.toml'
+      - 'data_generation/src/data_generation/**'
+      - 'data_generation/tests/**'
+      - 'data_generation/Justfile'
+      - 'data_generation/pyproject.toml'
       - '.github/workflows/**'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
     paths:
-      - 'src/data_generation/**'
-      - 'tests/**'
-      - 'Justfile'
-      - 'pyproject.toml'
+      - 'data_generation/src/data_generation/**'
+      - 'data_generation/tests/**'
+      - 'data_generation/Justfile'
+      - 'data_generation/pyproject.toml'
       - '.github/workflows/**'
 
 jobs:
@@ -29,17 +29,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
           
       - name: Install Just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run formatter
         run: just format
+        working-directory: data_generation
 
   lint:
     name: Lint
@@ -52,17 +57,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
           
       - name: Install Just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run linter
         run: just lint
+        working-directory: data_generation
 
   test:
     name: Test
@@ -75,14 +85,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
           
       - name: Install Just
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+        working-directory: data_generation
           
       - name: Install dependencies
         run: just sync
+        working-directory: data_generation
         
       - name: Run tests
-        run: just test 
+        run: just test
+        working-directory: data_generation 
