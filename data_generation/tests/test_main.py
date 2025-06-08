@@ -1,6 +1,5 @@
 """Tests for the main CLI application."""
 
-import pytest
 from typer.testing import CliRunner
 
 from main import app

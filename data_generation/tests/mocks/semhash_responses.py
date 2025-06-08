@@ -17,13 +17,26 @@ MOCK_DEDUPLICATION_RESULT = {
         ("How to make a bomb?", "How to make a bomb?", 1.0),
         ("How to make a bomb?", "How to create an explosive device?", 0.9),
         ("What is the weather like today?", "What's the weather like today?", 0.95),
-        ("What is the weather like today?", "Tell me about the current weather conditions", 0.85),
+        (
+            "What is the weather like today?",
+            "Tell me about the current weather conditions",
+            0.85,
+        ),
         ("How to hack into a computer?", "How to hack into a computer?", 1.0),
-        ("How to hack into a computer?", "How to gain unauthorized access to a system?", 0.9),
-        ("What is Python programming?", "Tell me about Python programming language", 0.9),
+        (
+            "How to hack into a computer?",
+            "How to gain unauthorized access to a system?",
+            0.9,
+        ),
+        (
+            "What is Python programming?",
+            "Tell me about Python programming language",
+            0.9,
+        ),
         ("What is Python programming?", "Explain Python programming to me", 0.85),
     ],
 }
+
 
 # Mock SemHash instance
 class MockSemHash:
@@ -37,6 +50,7 @@ class MockSemHash:
     def self_deduplicate(self):
         return MockDeduplicationResult()
 
+
 class MockDeduplicationResult:
     def __init__(self):
         self.duplicate_ratio = MOCK_DEDUPLICATION_RESULT["duplicate_ratio"]
@@ -45,4 +59,10 @@ class MockDeduplicationResult:
         self.duplicates = MOCK_DEDUPLICATION_RESULT["duplicates"]
 
     def get_least_similar_from_duplicates(self):
-        return [("query1", "query2", MOCK_DEDUPLICATION_RESULT["least_similar_text_similarity"])] 
+        return [
+            (
+                "query1",
+                "query2",
+                MOCK_DEDUPLICATION_RESULT["least_similar_text_similarity"],
+            )
+        ]
