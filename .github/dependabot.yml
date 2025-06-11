@@ -1,0 +1,129 @@
+version: 2
+updates:
+  # Enable version updates for Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/algorithms/heuristics"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "heuristics"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "pip"
+    directory: "/algorithms/ml_model"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "ml-model"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "pip"
+    directory: "/algorithms/llm_guardrail"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "llm-guardrail"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "pip"
+    directory: "/evaluation"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "evaluation"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "pip"
+    directory: "/shared"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "shared"
+    reviewers:
+      - "@yudhiesh"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "@yudhiesh"
+
+  # Enable version updates for Docker
+  - package-ecosystem: "docker"
+    directory: "/algorithms/heuristics"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+      - "heuristics"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "docker"
+    directory: "/algorithms/ml_model"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+      - "ml-model"
+    reviewers:
+      - "@yudhiesh"
+
+  - package-ecosystem: "docker"
+    directory: "/algorithms/llm_guardrail"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+      - "llm-guardrail"
+    reviewers:
+      - "@yudhiesh" 
