@@ -11,10 +11,10 @@ ENV UV_COMPILE_BYTECODE=1 \
 # Set working directory
 WORKDIR /app
 
-# Install shared module first (for better caching)
-COPY shared/ /shared/
+# Install common module first (for better caching)
+COPY common/ /common/
 RUN --mount=type=cache,target=/root/.cache/uv \
-    cd /shared && uv venv && uv pip install -e .
+    cd /common && uv venv && uv pip install -e .
 
 # Copy and install service dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -42,15 +42,15 @@ WORKDIR /app
 # Copy the virtual environment from builder
 COPY --from=builder --chown=guardrail:guardrail /app/.venv /app/.venv
 
-# Copy shared module
-COPY --from=builder --chown=guardrail:guardrail /shared /app/shared
+# Copy common module
+COPY --from=builder --chown=guardrail:guardrail /common /app/common
 
 # Copy application code
 COPY --from=builder --chown=guardrail:guardrail /app/src /app/src
 COPY --from=builder --chown=guardrail:guardrail /app/configs /app/configs
 
-# Install shared module in the runtime environment
-RUN /app/.venv/bin/pip install -e /app/shared
+# Install common module in the runtime environment
+RUN /app/.venv/bin/pip install -e /app/common
 
 # Switch to non-root user
 USER guardrail
