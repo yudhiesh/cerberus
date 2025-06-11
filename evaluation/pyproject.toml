@@ -2,7 +2,6 @@
 name = "guardrails-evaluation"
 version = "1.0.0"
 description = "Evaluation framework for LLM input guardrail algorithms"
-readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.25.0",
@@ -29,10 +28,6 @@ dev = [
     "mypy>=1.7.0",
     "pre-commit>=3.5.0",
 ]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100

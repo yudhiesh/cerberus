@@ -37,15 +37,20 @@ update-hooks:
 
 # Format code with black
 format:
-    black algorithms/ evaluation/ shared/ --line-length 100
+    black algorithms/ evaluation/ common/ --line-length 100
 
 # Run type checking with mypy
 typecheck:
-    mypy algorithms/ evaluation/ shared/ --python-version 3.12 --strict
+    mypy algorithms/ evaluation/ common/ --python-version 3.12 --strict
 
 # Run security checks with bandit
 security:
-    bandit -r algorithms/ evaluation/ shared/ -ll
+    bandit -r algorithms/ evaluation/ common/ -ll
+
+# Sync dependencies for a specific module
+sync MODULE:
+    @echo "📦 Syncing dependencies for {{MODULE}}..."
+    cd {{MODULE}} && uv sync
 
 # Build all Docker images
 build-all:
@@ -126,7 +131,7 @@ install-all:
     cd algorithms/ml_model && uv sync
     cd algorithms/llm_guardrail && uv sync
     cd evaluation && uv sync
-    cd shared && uv sync
+    cd common && uv sync
 
 # Run the evaluation framework
 evaluate:
