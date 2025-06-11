@@ -1,7 +1,7 @@
 import marimo
 
 __generated_with = "0.13.15"
-app = marimo.App(width="medium")
+app = marimo.App(width="full")
 
 
 @app.cell
@@ -25,8 +25,8 @@ def _(mo):
 
     ## 1. Loading the Dataset
 
-    First, we'll load the guardrails dataset from Hugging Face. This dataset contains prompts
-    that are used to test AI safety guardrails.
+    First, we'll load the guardrails dataset from Hugging Face and look at the train set. This dataset contains prompts
+    that are used to test AI safety guardrails. 
     """
     )
     return
@@ -36,7 +36,7 @@ def _(mo):
 def _():
     from datasets import load_dataset
 
-    ds = load_dataset("yudhiesh/cerberus-guardrails-small", split='train')
+    ds = load_dataset("yudhiesh/cerberus-guardrails-small", split="train")
     return (ds,)
 
 
@@ -58,8 +58,7 @@ def _(ds, mo):
 @app.cell
 def _(ds):
     input_prompt = ds['input_prompt']
-    # Fix: This should probably be the actual label column
-    label = ds['label'] if 'label' in ds.column_names else ds['output_class']
+    label = ds['label']
     return input_prompt, label
 
 
@@ -133,7 +132,9 @@ def _(mo):
         """
     ## 4. Fitting the Topic Model
 
-    Now we'll fit BERTopic on our input prompts. This process:
+    Now we'll fit BERTopic on our input prompts. 
+    This process:
+
     1. Embeds all prompts into high-dimensional vectors
     2. Reduces dimensions with UMAP
     3. Clusters similar prompts with HDBSCAN
@@ -171,6 +172,7 @@ def _(mo, num_outliers, num_topics):
     ### Interactive Topic Visualization
 
     This visualization shows the relationships between topics:
+
     - **Size** indicates topic frequency
     - **Distance** shows semantic similarity
     - **Hover** to see top keywords for each topic
@@ -198,7 +200,9 @@ def _(mo):
     ## 6. Topic Similarity Heatmap
 
     This heatmap shows how similar topics are to each other based on their keyword distributions.
-    Darker colors indicate higher similarity. This helps identify:
+    Darker colors indicate higher similarity. 
+    This helps identify:
+
     - Topic clusters that might be merged
     - Truly distinct topic areas
     - The overall thematic structure of your data
@@ -220,7 +224,9 @@ def _(mo):
     ## 7. Topics by Label Analysis
 
     Since our dataset includes labels, we can analyze how topics are distributed across 
-    different categories. This reveals:
+    different categories. 
+    This reveals:
+
     - Which topics are specific to certain labels
     - Which topics appear across multiple labels
     - The characteristic themes of each label category
@@ -248,7 +254,9 @@ def _(mo):
     ## 8. Document Clustering Visualization
 
     This scatter plot shows all prompts in 2D space, colored by their assigned topic.
-    Points that are close together have similar semantic content. This visualization helps:
+    Points that are close together have similar semantic content. 
+    This visualization helps:
+
     - Identify outliers and edge cases
     - See topic boundaries and overlaps
     - Understand the overall structure of your prompt space
