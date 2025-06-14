@@ -64,7 +64,7 @@
 
 - [ ] 2.0 Implement heuristics-based guardrail algorithm
   - [x] 2.1 Initialize heuristics service directory with UV and pyproject.toml
-  - [ ] 2.2 Create FastAPI application with /predict and /health endpoints
+  - [x] 2.2 Create FastAPI application with /predict and /health endpoints
   - [ ] 2.3 Implement rules engine with keyword blacklist functionality
   - [ ] 2.4 Add regex pattern matching for common attack patterns
   - [ ] 2.5 Implement weighted scoring system to combine rule outputs

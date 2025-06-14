@@ -1,0 +1,136 @@
+# Heuristics Guardrail Configuration
+service:
+  name: "heuristics-guardrail"
+  version: "1.0.0"
+  port: 8002
+  host: "0.0.0.0"
+
+# Rules engine configuration
+rules_engine:
+  unsafe_threshold: 0.2  # Score threshold for UNSAFE classification (0.0-1.0)
+  
+  rules:
+    # SQL Injection Detection
+    - name: "sql_injection_keywords"
+      rule_type: "keyword_blacklist"
+      patterns:
+        - "drop table"
+        - "union select"
+        - "insert into"
+        - "delete from"
+        - "update set"
+        - "exec("
+        - "execute("
+        - "cast("
+        - "convert("
+      weight: 0.8
+      case_sensitive: false
+      description: "Common SQL injection keywords and functions"
+    
+    # XSS Detection
+    - name: "xss_patterns"
+      rule_type: "regex_pattern"
+      patterns:
+        - "<script[^>]*>.*?</script>"
+        - "javascript:"
+        - "onerror\\s*="
+        - "onload\\s*="
+        - "onclick\\s*="
+        - "onmouseover\\s*="
+        - "<iframe[^>]*>"
+        - "document\\.cookie"
+        - "window\\.location"
+      weight: 0.9
+      case_sensitive: false
+      description: "Cross-site scripting patterns"
+    
+    # Path Traversal Detection
+    - name: "path_traversal"
+      rule_type: "regex_pattern"
+      patterns:
+        - "\\.\\./\\.\\."
+        - "\\.\\.[\\\\/]"
+        - "%2e%2e"
+        - "%252e%252e"
+        - "\\.\\.%5c"
+        - "\\.\\.%2f"
+      weight: 0.8
+      case_sensitive: false
+      description: "Directory traversal patterns"
+    
+    # Prompt Injection Detection
+    - name: "prompt_injection"
+      rule_type: "phrase_match"
+      patterns:
+        - "ignore previous instructions"
+        - "disregard all previous"
+        - "forget everything"
+        - "new instructions follow"
+        - "system prompt"
+        - "you are now"
+        - "act as"
+        - "pretend to be"
+        - "roleplay as"
+        - "simulate being"
+      weight: 1.0
+      case_sensitive: false
+      description: "LLM prompt injection attempts"
+    
+    # Data Exfiltration Detection
+    - name: "data_exfiltration"
+      rule_type: "keyword_blacklist"
+      patterns:
+        - "password"
+        - "api_key"
+        - "secret_key"
+        - "private_key"
+        - "auth_token"
+        - "bearer token"
+        - "credentials"
+        - "ssh key"
+      weight: 0.6
+      case_sensitive: false
+      description: "Attempts to extract sensitive information"
+    
+    # Harmful Content Detection
+    - name: "harmful_content"
+      rule_type: "keyword_blacklist"
+      patterns:
+        - "hack"
+        - "exploit"
+        - "vulnerability"
+        - "bypass security"
+        - "disable safety"
+        - "jailbreak"
+        - "pwn"
+        - "rootkit"
+        - "malware"
+        - "ransomware"
+      weight: 1.0
+      case_sensitive: false
+      description: "General harmful content indicators"
+    
+    # LDAP Injection Detection
+    - name: "ldap_injection"
+      rule_type: "regex_pattern"
+      patterns:
+        - "\\(\\|"
+        - "\\(&"
+        - "\\)\\("
+        - "\\*\\)"
+        - "\\(\\*"
+      weight: 0.7
+      case_sensitive: false
+      description: "LDAP injection patterns"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+performance:
+  max_query_length: 10000  # Maximum allowed query length
+  request_timeout_seconds: 5
+  
+features:
+  log_matches: true  # Log matched rules for debugging
+  return_match_details: false  # Include match details in API response

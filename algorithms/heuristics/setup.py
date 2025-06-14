@@ -12,6 +12,7 @@ setup(
         "fastapi>=0.104.0",
         "uvicorn[standard]>=0.24.0",
         "hydra-core>=1.3.2",
+        "omegaconf>=2.3.0",
         "httpx>=0.25.0",
         "pydantic>=2.5.0",
         "pydantic-settings>=2.1.0",
