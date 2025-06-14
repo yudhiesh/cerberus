@@ -1,0 +1,27 @@
+# Bandit configuration file
+# https://bandit.readthedocs.io/en/latest/config.html
+
+[bandit]
+# Skip test files
+exclude_dirs = [
+    "/tests/",
+    "/test/",
+    "/.venv/",
+    "/venv/",
+    "/__pycache__/",
+    "/.mypy_cache/",
+    "/.pytest_cache/",
+    "/data_generation/",
+    "/eda/",
+]
+
+# Test IDs to skip
+skips = [
+    # B101: Test for use of assert (common in tests)
+    # B601: shell_true - we might need this for some operations
+]
+
+# Test IDs to run
+tests = [
+    # All tests except those skipped
+] 
