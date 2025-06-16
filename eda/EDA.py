@@ -26,7 +26,7 @@ def _(mo):
     ## 1. Loading the Dataset
 
     First, we'll load the guardrails dataset from Hugging Face and look at the train set. This dataset contains prompts
-    that are used to test AI safety guardrails. 
+    that are used to test AI safety guardrails.
     """
     )
     return
