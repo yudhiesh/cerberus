@@ -1,4 +1,4 @@
-name: EDA CI
+name: EDA
 
 on:
   push:
