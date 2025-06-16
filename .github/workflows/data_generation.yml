@@ -8,7 +8,7 @@ on:
       - 'data_generation/tests/**'
       - 'data_generation/Justfile'
       - 'data_generation/pyproject.toml'
-      - '.github/workflows/**'
+      - '.github/workflows/data_generation.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -16,7 +16,7 @@ on:
       - 'data_generation/tests/**'
       - 'data_generation/Justfile'
       - 'data_generation/pyproject.toml'
-      - '.github/workflows/**'
+      - '.github/workflows/data_generation.yml'
 
 jobs:
   format:
