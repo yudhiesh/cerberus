@@ -26,7 +26,7 @@ def _(mo):
     ## 1. Loading the Dataset
 
     First, we'll load the guardrails dataset from Hugging Face and look at the train set. This dataset contains prompts
-    that are used to test AI safety guardrails. 
+    that are used to test AI safety guardrails.
     """
     )
     return
@@ -57,8 +57,8 @@ def _(ds, mo):
 
 @app.cell
 def _(ds):
-    input_prompt = ds['input_prompt']
-    label = ds['label']
+    input_prompt = ds["input_prompt"]
+    label = ds["label"]
     return input_prompt, label
 
 
@@ -94,25 +94,25 @@ def _():
     import matplotlib.pyplot as plt
 
     # UMAP for dimensionality reduction
-    umap_model = UMAP(n_neighbors=15, 
-                      n_components=5, 
-                      min_dist=0.0, 
-                      metric='cosine',
-                      random_state=42)
+    umap_model = UMAP(
+        n_neighbors=15, n_components=5, min_dist=0.0, metric="cosine", random_state=42
+    )
 
     # HDBSCAN for clustering
-    hdbscan_model = HDBSCAN(min_cluster_size=15,
-                            metric='euclidean', 
-                            cluster_selection_method='eom',
-                            prediction_data=True)
+    hdbscan_model = HDBSCAN(
+        min_cluster_size=15,
+        metric="euclidean",
+        cluster_selection_method="eom",
+        prediction_data=True,
+    )
 
     # Sentence transformer for embeddings
-    embedding_model = SentenceTransformer('thenlper/gte-large')
+    embedding_model = SentenceTransformer("thenlper/gte-large")
 
     # Vectorizer for keyword extraction
-    vectorizer_model = CountVectorizer(stop_words="english", 
-                                      min_df=2,
-                                      ngram_range=(1, 2))
+    vectorizer_model = CountVectorizer(
+        stop_words="english", min_df=2, ngram_range=(1, 2)
+    )
 
     # Initialize BERTopic
     topic_model = BERTopic(
@@ -121,7 +121,7 @@ def _():
         hdbscan_model=hdbscan_model,
         vectorizer_model=vectorizer_model,
         top_n_words=10,
-        verbose=True
+        verbose=True,
     )
     return UMAP, embedding_model, topic_model
 
@@ -156,7 +156,7 @@ def _(input_prompt, topic_model):
     num_outliers = sum(1 for t in topics if t == -1)
 
     print(f"Topics discovered: {num_topics}")
-    print(f"Outliers: {num_outliers} ({num_outliers/len(topics)*100:.1f}%)")
+    print(f"Outliers: {num_outliers} ({num_outliers / len(topics) * 100:.1f}%)")
     return num_outliers, num_topics, topic_info, topics
 
 
@@ -278,10 +278,10 @@ def _(UMAP, embedding_model, input_prompt, mo, topic_model, topics):
 
     # Create the visualization
     fig_docs = topic_model.visualize_documents(
-        input_prompt, 
+        input_prompt,
         topics=topics,
         reduced_embeddings=reduced_embeddings_2d,
-        sample=0.5 if len(input_prompt) > 2000 else 1.0  # Sample if dataset is large
+        sample=0.5 if len(input_prompt) > 2000 else 1.0,  # Sample if dataset is large
     )
 
     mo.ui.plotly(fig_docs)
@@ -306,10 +306,10 @@ def _(mo, topic_info, topic_model):
     top_topics_md = "### Top 10 Topics by Frequency\n\n"
 
     for _, row in topic_info.head(11).iterrows():
-        if row['Topic'] != -1:  # Skip outlier topic
-            topic_num = row['Topic']
-            count = row['Count']
-            name = row['Name']
+        if row["Topic"] != -1:  # Skip outlier topic
+            topic_num = row["Topic"]
+            count = row["Count"]
+            name = row["Name"]
 
             # Get representative docs
             rep_docs = topic_model.get_representative_docs(topic_num)
