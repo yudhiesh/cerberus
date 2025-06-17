@@ -1,4 +1,8 @@
-# Development Setup
+# Cerberus: Safeguards for LLMs
+
+This repository contains the implementation of the synthetic data generation pipeline described in [Cerberus: Safeguards for Large Language Models - Synthetic Data Generation (Part 1)](https://yudhiesh.github.io/2025/06/16/cerberus-safeguards-for-llms-synthetic-data-generation-part-1.html). 
+
+## Development Setup
 
 This project uses Nix to manage development dependencies. Follow these steps to get started:
 
